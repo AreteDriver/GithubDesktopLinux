@@ -500,3 +500,67 @@ code {
   justify-content: flex-end;
   margin-top: 20px;
 }
+
+/* Notifications */
+.notifications {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
+.notification {
+  background-color: #2d2d30;
+  border-left: 4px solid #0e639c;
+  padding: 15px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.3s ease-out;
+  color: #d4d4d4;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-success {
+  border-left-color: #2ea043;
+}
+
+.notification-error {
+  border-left-color: #f85149;
+}
+
+.notification-info {
+  border-left-color: #0e639c;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: #858585;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 15px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.notification-close:hover {
+  color: #d4d4d4;
+}

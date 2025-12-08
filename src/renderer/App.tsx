@@ -7,7 +7,11 @@ import { TemplateModal } from './components/TemplateModal';
 import { RepoTemplate } from './utils/templates';
 import './styles/App.css';
 
-const path = window.require('path');
+interface Notification {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 
 function App() {
   const [repoPath, setRepoPath] = useState<string>('');
@@ -20,6 +24,19 @@ function App() {
   const [error, setError] = useState<string>('');
   const [stagedFiles, setStagedFiles] = useState<string[]>([]);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationId, setNotificationId] = useState(0);
+
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = notificationId;
+    setNotificationId(id + 1);
+    setNotifications([...notifications, { id, message, type }]);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    }, 5000);
+  };
 
   useEffect(() => {
     if (repoPath) {
@@ -84,8 +101,9 @@ function App() {
     const result = await gitApi.checkout(repoPath, branch);
     if (result.success) {
       loadRepoData();
+      showNotification(`Switched to branch: ${branch}`, 'success');
     } else {
-      alert(`Failed to switch branch: ${result.error}`);
+      showNotification(`Failed to switch branch: ${result.error}`, 'error');
     }
   };
 
@@ -93,18 +111,18 @@ function App() {
     const result = await gitApi.pull(repoPath);
     if (result.success) {
       loadRepoData();
-      alert('Pull successful');
+      showNotification('Pull successful', 'success');
     } else {
-      alert(`Pull failed: ${result.error}`);
+      showNotification(`Pull failed: ${result.error}`, 'error');
     }
   };
 
   const handlePush = async () => {
     const result = await gitApi.push(repoPath);
     if (result.success) {
-      alert('Push successful');
+      showNotification('Push successful', 'success');
     } else {
-      alert(`Push failed: ${result.error}`);
+      showNotification(`Push failed: ${result.error}`, 'error');
     }
   };
 
@@ -119,7 +137,7 @@ function App() {
     try {
       // Create template files
       for (const [filePath, content] of Object.entries(template.files)) {
-        const fullPath = path.join(repoPath, filePath);
+        const fullPath = gitApi.pathJoin(repoPath, filePath);
         const result = await gitApi.writeFile(fullPath, content);
         if (!result.success) {
           throw new Error(result.error);
@@ -128,15 +146,15 @@ function App() {
 
       // Create .gitignore if specified
       if (template.gitignore) {
-        const gitignorePath = path.join(repoPath, '.gitignore');
+        const gitignorePath = gitApi.pathJoin(repoPath, '.gitignore');
         await gitApi.writeFile(gitignorePath, template.gitignore);
       }
 
       setShowTemplateModal(false);
       loadRepoData();
-      alert(`Template "${template.name}" applied successfully!`);
+      showNotification(`Template "${template.name}" applied successfully!`, 'success');
     } catch (err) {
-      alert(`Failed to apply template: ${err}`);
+      showNotification(`Failed to apply template: ${err}`, 'error');
     }
   };
 
@@ -377,6 +395,24 @@ function App() {
           onSelect={handleTemplateSelect}
         />
       )}
+
+      {/* Notification System */}
+      <div className="notifications">
+        {notifications.map((notification) => (
+          <div 
+            key={notification.id} 
+            className={`notification notification-${notification.type}`}
+          >
+            {notification.message}
+            <button 
+              className="notification-close"
+              onClick={() => setNotifications(prev => prev.filter(n => n.id !== notification.id))}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,25 @@
-const { ipcRenderer } = window.require('electron');
+// Access the exposed API from preload script
+declare global {
+  interface Window {
+    electronAPI: {
+      gitStatus: (repoPath: string) => Promise<{ success: boolean; data?: GitStatus; error?: string }>;
+      gitLog: (repoPath: string) => Promise<{ success: boolean; data?: GitLog; error?: string }>;
+      gitBranches: (repoPath: string) => Promise<{ success: boolean; data?: GitBranches; error?: string }>;
+      gitDiff: (repoPath: string, file?: string) => Promise<{ success: boolean; data?: string; error?: string }>;
+      gitCommit: (repoPath: string, message: string) => Promise<{ success: boolean; error?: string }>;
+      gitAdd: (repoPath: string, files: string[]) => Promise<{ success: boolean; error?: string }>;
+      gitCheckout: (repoPath: string, branch: string) => Promise<{ success: boolean; error?: string }>;
+      gitPull: (repoPath: string) => Promise<{ success: boolean; error?: string }>;
+      gitPush: (repoPath: string) => Promise<{ success: boolean; error?: string }>;
+      aiSuggestCommit: (diff: string) => Promise<{ success: boolean; data?: string[]; error?: string }>;
+      openDirectory: () => Promise<{ canceled: boolean; filePaths: string[] }>;
+      writeFile: (filePath: string, content: string) => Promise<{ success: boolean; error?: string }>;
+      exists: (filePath: string) => Promise<{ success: boolean; exists?: boolean; error?: string }>;
+      pathJoin: (...args: string[]) => string;
+      pathDirname: (path: string) => string;
+    };
+  }
+}
 
 export interface GitStatus {
   current: string;
@@ -29,57 +50,19 @@ export interface GitBranches {
 }
 
 export const gitApi = {
-  status: (repoPath: string): Promise<{ success: boolean; data?: GitStatus; error?: string }> => {
-    return ipcRenderer.invoke('git:status', repoPath);
-  },
-
-  log: (repoPath: string): Promise<{ success: boolean; data?: GitLog; error?: string }> => {
-    return ipcRenderer.invoke('git:log', repoPath);
-  },
-
-  branches: (repoPath: string): Promise<{ success: boolean; data?: GitBranches; error?: string }> => {
-    return ipcRenderer.invoke('git:branches', repoPath);
-  },
-
-  diff: (repoPath: string, file?: string): Promise<{ success: boolean; data?: string; error?: string }> => {
-    return ipcRenderer.invoke('git:diff', repoPath, file);
-  },
-
-  commit: (repoPath: string, message: string): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('git:commit', repoPath, message);
-  },
-
-  add: (repoPath: string, files: string[]): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('git:add', repoPath, files);
-  },
-
-  checkout: (repoPath: string, branch: string): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('git:checkout', repoPath, branch);
-  },
-
-  pull: (repoPath: string): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('git:pull', repoPath);
-  },
-
-  push: (repoPath: string): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('git:push', repoPath);
-  },
-
-  suggestCommitMessage: (diff: string): Promise<{ success: boolean; data?: string[]; error?: string }> => {
-    return ipcRenderer.invoke('ai:suggest-commit', diff);
-  },
-
-  // Dialog API
-  openDirectory: (): Promise<{ canceled: boolean; filePaths: string[] }> => {
-    return ipcRenderer.invoke('dialog:openDirectory');
-  },
-
-  // File system API
-  writeFile: (filePath: string, content: string): Promise<{ success: boolean; error?: string }> => {
-    return ipcRenderer.invoke('fs:writeFile', filePath, content);
-  },
-
-  exists: (filePath: string): Promise<{ success: boolean; exists?: boolean; error?: string }> => {
-    return ipcRenderer.invoke('fs:exists', filePath);
-  },
+  status: (repoPath: string) => window.electronAPI.gitStatus(repoPath),
+  log: (repoPath: string) => window.electronAPI.gitLog(repoPath),
+  branches: (repoPath: string) => window.electronAPI.gitBranches(repoPath),
+  diff: (repoPath: string, file?: string) => window.electronAPI.gitDiff(repoPath, file),
+  commit: (repoPath: string, message: string) => window.electronAPI.gitCommit(repoPath, message),
+  add: (repoPath: string, files: string[]) => window.electronAPI.gitAdd(repoPath, files),
+  checkout: (repoPath: string, branch: string) => window.electronAPI.gitCheckout(repoPath, branch),
+  pull: (repoPath: string) => window.electronAPI.gitPull(repoPath),
+  push: (repoPath: string) => window.electronAPI.gitPush(repoPath),
+  suggestCommitMessage: (diff: string) => window.electronAPI.aiSuggestCommit(diff),
+  openDirectory: () => window.electronAPI.openDirectory(),
+  writeFile: (filePath: string, content: string) => window.electronAPI.writeFile(filePath, content),
+  exists: (filePath: string) => window.electronAPI.exists(filePath),
+  pathJoin: (...args: string[]) => window.electronAPI.pathJoin(...args),
+  pathDirname: (path: string) => window.electronAPI.pathDirname(path),
 };
