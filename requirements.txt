@@ -1,0 +1,7 @@
+PyQt6>=6.6.0
+PyQt6-WebEngine>=6.6.0
+pygit2>=1.13.0
+PyGithub>=2.1.1
+keyring>=24.3.0
+requests>=2.31.0
+python-dotenv>=1.0.0
