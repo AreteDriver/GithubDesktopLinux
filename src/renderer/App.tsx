@@ -172,6 +172,7 @@ function App() {
           repoPath={repoPath}
           stagedFiles={stagedFiles}
           onCommitSuccess={handleCommitSuccess}
+          onNotification={showNotification}
         />
 
         <div style={{ marginBottom: '20px' }}>

@@ -5,9 +5,15 @@ interface CommitFormProps {
   repoPath: string;
   stagedFiles: string[];
   onCommitSuccess: () => void;
+  onNotification: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
-export const CommitForm: React.FC<CommitFormProps> = ({ repoPath, stagedFiles, onCommitSuccess }) => {
+export const CommitForm: React.FC<CommitFormProps> = ({ 
+  repoPath, 
+  stagedFiles, 
+  onCommitSuccess,
+  onNotification 
+}) => {
   const [message, setMessage] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,7 +45,7 @@ export const CommitForm: React.FC<CommitFormProps> = ({ repoPath, stagedFiles, o
 
   const handleCommit = async () => {
     if (!message.trim() || stagedFiles.length === 0) {
-      alert('Please enter a commit message and stage files');
+      onNotification('Please enter a commit message and stage files', 'error');
       return;
     }
 
@@ -50,12 +56,13 @@ export const CommitForm: React.FC<CommitFormProps> = ({ repoPath, stagedFiles, o
         setMessage('');
         setSuggestions([]);
         setShowSuggestions(false);
+        onNotification('Commit successful', 'success');
         onCommitSuccess();
       } else {
-        alert(`Commit failed: ${result.error}`);
+        onNotification(`Commit failed: ${result.error}`, 'error');
       }
     } catch (error) {
-      alert(`Commit failed: ${error}`);
+      onNotification(`Commit failed: ${error}`, 'error');
     } finally {
       setLoading(false);
     }
