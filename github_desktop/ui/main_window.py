@@ -474,9 +474,8 @@ Date: {commit['timestamp']}
             QMessageBox.warning(self, "Error", "Please enter a commit message")
             return
         
-        # Get user info from git config or use defaults
-        user_name = "GitHub Desktop User"
-        user_email = "user@github-desktop.local"
+        # Get user info from git config
+        user_name, user_email = self.current_repo.get_user_info()
         
         # Stage all changes
         if self.current_repo.stage_all():

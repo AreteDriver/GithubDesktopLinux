@@ -325,8 +325,7 @@ class GitRepository:
                 return False, "Merge conflicts detected"
             
             # Get user info for merge commit
-            user_name = self._repo.config.get_string('user.name') or "GitHub Desktop"
-            user_email = self._repo.config.get_string('user.email') or "user@github-desktop.local"
+            user_name, user_email = self.get_user_info()
             
             author = pygit2.Signature(user_name, user_email)
             tree = self._repo.index.write_tree()
@@ -389,3 +388,34 @@ class GitRepository:
             return remote.url
         except Exception:
             return None
+    
+    def get_user_info(self) -> Tuple[str, str]:
+        """
+        Get user name and email from git config.
+        
+        Returns:
+            Tuple of (name, email) with defaults if not configured
+        """
+        if not self._repo:
+            return "GitHub Desktop User", "user@localhost"
+        
+        try:
+            # Try to get from local config first, then global
+            config = self._repo.config
+            user_name = config.get_string('user.name')
+        except Exception:
+            user_name = None
+        
+        try:
+            config = self._repo.config
+            user_email = config.get_string('user.email')
+        except Exception:
+            user_email = None
+        
+        # Fallback to reasonable defaults
+        if not user_name:
+            user_name = "GitHub Desktop User"
+        if not user_email:
+            user_email = "user@localhost"
+        
+        return user_name, user_email
