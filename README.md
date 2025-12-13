@@ -331,12 +331,12 @@ Quickly scaffold new projects with templates that include:
 | **AI Features** | ✅ Local AI commit suggestions | ❌ Not available |
 | **Template System** | ✅ Project scaffolding | ❌ Not included |
 | **License** | MIT (Free & Open Source) | Often commercial/freemium |
-| **Active Development** | ✅ 2024, maintained | Varies widely |
+| **Active Development** | ✅ Current, actively maintained | Varies widely |
 
 **Why Choose GitHub Desktop Linux?**
 - **Best of both worlds**: Combines GitHub Desktop's intuitive workflow with Linux-native implementation
 - **Enhanced with AI**: Goes beyond traditional Git GUIs with intelligent automation
-- **Modern & Maintained**: Built with 2024 technologies, not legacy codebases
+- **Modern & Maintained**: Built with current technologies, not legacy codebases
 - **Community-Driven**: Open source with active development for Linux users
 
 ## 🤝 Contributing
