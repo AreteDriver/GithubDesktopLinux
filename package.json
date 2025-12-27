@@ -27,7 +27,7 @@
     "@types/react-dom": "^18.0.0",
     "concurrently": "^8.0.0",
     "css-loader": "^6.0.0",
-    "electron": "^28.0.0",
+    "electron": "^39.2.7",
     "electron-builder": "^24.0.0",
     "html-webpack-plugin": "^5.0.0",
     "style-loader": "^3.0.0",
@@ -45,7 +45,10 @@
     "appId": "com.githubdesktoplinux.app",
     "productName": "GitHub Desktop Linux",
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Development"
     }
   }
